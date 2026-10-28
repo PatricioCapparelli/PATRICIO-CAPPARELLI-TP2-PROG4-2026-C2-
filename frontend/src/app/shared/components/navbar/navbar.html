@@ -1,0 +1,13 @@
+<nav class="navbar">
+  <a class="marca" routerLink="/">Remember!</a>
+  <div class="menu">
+    @if (auth.logueado()) {
+      <a routerLink="/publicaciones" routerLinkActive="active">Publicaciones</a>
+      <a routerLink="/mi-perfil" routerLinkActive="active">Mi perfil</a>
+      <button type="button" class="btn btn-salir" (click)="auth.logout()">Salir</button>
+    } @else {
+      <a routerLink="/login" routerLinkActive="active">Ingresar</a>
+      <a routerLink="/registro" routerLinkActive="active">Registrarse</a>
+    }
+  </div>
+</nav>

@@ -1,0 +1,28 @@
+@if (auth.usuario(); as u) {
+  <div class="contenedor">
+    <div class="card perfil">
+      @if (u.imagenPerfil) {
+        <img [src]="apiUrl + u.imagenPerfil" alt="Foto de perfil" class="avatar" />
+      } @else {
+        <div class="avatar avatar-inicial">{{ u.nombre[0] }}{{ u.apellido[0] }}</div>
+      }
+
+      <h3>{{ u.nombre }} {{ u.apellido }}</h3>
+      <p class="usuario">&#64;{{ u.nombreUsuario }}</p>
+
+      @if (u.perfil === 'administrador') {
+        <span class="insignia">Administrador</span>
+      }
+
+      @if (u.descripcion) {
+        <p>{{ u.descripcion }}</p>
+      }
+
+      <ul class="datos">
+        <li><strong>Correo:</strong> {{ u.correo }}</li>
+        <li><strong>Nacimiento:</strong> {{ u.fechaNacimiento | date: 'dd/MM/yyyy' : 'UTC' }}</li>
+        <li><strong>Perfil:</strong> {{ u.perfil }}</li>
+      </ul>
+    </div>
+  </div>
+}

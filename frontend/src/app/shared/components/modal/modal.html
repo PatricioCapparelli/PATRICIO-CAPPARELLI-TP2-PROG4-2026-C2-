@@ -1,0 +1,24 @@
+@if (modalService.modal(); as m) {
+  <div class="modal-fondo" (click)="modalService.cerrar()">
+    <div class="modal" role="dialog" aria-modal="true" (click)="$event.stopPropagation()">
+      <h2
+        class="modal-titulo"
+        [class.exito]="m.tipo === 'exito'"
+        [class.error]="m.tipo === 'error'"
+        [class.info]="m.tipo === 'info'"
+      >
+        {{ m.titulo }}
+      </h2>
+      <div class="modal-cuerpo">
+        @for (msg of m.mensajes; track $index) {
+          <p>{{ msg }}</p>
+        }
+      </div>
+      <div class="modal-pie">
+        <button type="button" class="btn btn-primario" (click)="modalService.cerrar()">
+          Aceptar
+        </button>
+      </div>
+    </div>
+  </div>
+}

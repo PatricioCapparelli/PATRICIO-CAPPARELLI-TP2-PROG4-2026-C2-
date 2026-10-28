@@ -1,0 +1,56 @@
+import { HttpClient } from '@angular/common/http';
+import { Injectable, computed, inject, signal } from '@angular/core';
+import { Router } from '@angular/router';
+import { tap } from 'rxjs';
+import { API_URL } from '../config';
+import { RespuestaAuth, Usuario } from '../../shared/models/usuario';
+
+const CLAVE_TOKEN = 'token';
+const CLAVE_USUARIO = 'usuario';
+
+@Injectable({ providedIn: 'root' })
+export class AuthService {
+  private http = inject(HttpClient);
+  private router = inject(Router);
+
+  usuario = signal<Usuario | null>(this.leerUsuario());
+  logueado = computed(() => !!this.usuario());
+
+  get token(): string | null {
+    return localStorage.getItem(CLAVE_TOKEN);
+  }
+
+  registro(datos: FormData) {
+    return this.http
+      .post<RespuestaAuth>(`${API_URL}/auth/registro`, datos)
+      .pipe(tap((r) => this.guardarSesion(r)));
+  }
+
+  login(identificador: string, password: string) {
+    return this.http
+      .post<RespuestaAuth>(`${API_URL}/auth/login`, { identificador, password })
+      .pipe(tap((r) => this.guardarSesion(r)));
+  }
+
+  logout() {
+    localStorage.removeItem(CLAVE_TOKEN);
+    localStorage.removeItem(CLAVE_USUARIO);
+    this.usuario.set(null);
+    this.router.navigate(['/login']);
+  }
+
+  private guardarSesion(r: RespuestaAuth) {
+    localStorage.setItem(CLAVE_TOKEN, r.access_token);
+    localStorage.setItem(CLAVE_USUARIO, JSON.stringify(r.usuario));
+    this.usuario.set(r.usuario);
+  }
+
+  private leerUsuario(): Usuario | null {
+    try {
+      const raw = localStorage.getItem(CLAVE_USUARIO);
+      return raw ? (JSON.parse(raw) as Usuario) : null;
+    } catch {
+      return null;
+    }
+  }
+}
