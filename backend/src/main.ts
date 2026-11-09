@@ -11,6 +11,8 @@ async function bootstrap() {
   app.enableCors();
   app.useStaticAssets(join(process.cwd(), 'uploads'), { prefix: '/uploads' });
 
-  await app.listen(process.env.PORT ?? 3000);
+  const port = process.env.PORT ?? 3000;
+await app.listen(port);
+console.log(`Backend escuchando en http://localhost:${port}`);
 }
 void bootstrap();

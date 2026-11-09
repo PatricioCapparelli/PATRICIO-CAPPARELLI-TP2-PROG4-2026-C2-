@@ -24,5 +24,21 @@
         <li><strong>Perfil:</strong> {{ u.perfil }}</li>
       </ul>
     </div>
+
+    <h3 class="seccion-titulo">Mis últimas publicaciones</h3>
+
+    @if (cargando()) {
+      <p class="ayuda">Cargando publicaciones...</p>
+    } @else if (error()) {
+      <p class="error-texto">No se pudieron cargar tus publicaciones.</p>
+    } @else {
+      @for (p of publicaciones(); track p._id) {
+        <app-publicacion-item [publicacion]="p" [soloLectura]="true" [mostrarComentarios]="true" />
+      } @empty {
+        <div class="card vacio">
+          <p>Todavía no publicaste nada.</p>
+        </div>
+      }
+    }
   </div>
 }

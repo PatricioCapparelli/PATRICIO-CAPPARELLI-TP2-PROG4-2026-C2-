@@ -1,11 +1,15 @@
 @if (modalService.modal(); as m) {
-  <div class="modal-fondo" (click)="modalService.cerrar()">
+  <div
+    class="modal-fondo"
+    (click)="m.tipo === 'confirmar' ? modalService.cancelar() : modalService.cerrar()"
+  >
     <div class="modal" role="dialog" aria-modal="true" (click)="$event.stopPropagation()">
       <h2
         class="modal-titulo"
         [class.exito]="m.tipo === 'exito'"
         [class.error]="m.tipo === 'error'"
         [class.info]="m.tipo === 'info'"
+        [class.confirmar]="m.tipo === 'confirmar'"
       >
         {{ m.titulo }}
       </h2>
@@ -15,9 +19,18 @@
         }
       </div>
       <div class="modal-pie">
-        <button type="button" class="btn btn-primario" (click)="modalService.cerrar()">
-          Aceptar
-        </button>
+        @if (m.tipo === 'confirmar') {
+          <button type="button" class="btn btn-secundario" (click)="modalService.cancelar()">
+            Cancelar
+          </button>
+          <button type="button" class="btn btn-primario" (click)="modalService.cerrar()">
+            Confirmar
+          </button>
+        } @else {
+          <button type="button" class="btn btn-primario" (click)="modalService.cerrar()">
+            Aceptar
+          </button>
+        }
       </div>
     </div>
   </div>

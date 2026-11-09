@@ -7,5 +7,5 @@ export function mensajesDeError(err: HttpErrorResponse): string[] {
   const msg = err.error?.message;
   if (Array.isArray(msg)) return msg;
   if (typeof msg === 'string') return [msg];
-  return ['Ocurrió un error inesperado.'];
+  return [`Ocurrió un error inesperado (código ${err.status ?? 'sin respuesta'}) en ${err.url ?? 'una URL desconocida'}.`];
 }
