@@ -1,4 +1,4 @@
 export const environment = {
-    production: true,
-    API_URL: 'https://patricio-capparelli-tp2-prog4-2026-c2.onrender.com'
+    production: false,
+    API_URL: 'http://localhost:3000'
 };
