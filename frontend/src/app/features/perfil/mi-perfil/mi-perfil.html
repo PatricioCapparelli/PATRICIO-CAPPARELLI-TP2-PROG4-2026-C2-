@@ -2,7 +2,7 @@
   <div class="contenedor">
     <div class="card perfil">
       @if (u.imagenPerfil) {
-        <img [src]="apiUrl + u.imagenPerfil" alt="Foto de perfil" class="avatar" />
+        <img [src]="u.imagenPerfil | urlImagen" alt="Foto de perfil" class="avatar" />
       } @else {
         <div class="avatar avatar-inicial">{{ u.nombre[0] }}{{ u.apellido[0] }}</div>
       }

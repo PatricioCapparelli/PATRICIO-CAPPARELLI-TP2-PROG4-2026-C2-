@@ -10,11 +10,12 @@ import { RequestConUsuario } from './request-con-usuario.interface';
 
 @Injectable()
 export class TokenGuard implements CanActivate {
-  constructor(private readonly config: ConfigService) {}
+  constructor(private readonly config: ConfigService) { }
 
   canActivate(context: ExecutionContext): boolean {
     const req = context.switchToHttp().getRequest<RequestConUsuario>();
-    const token = req.headers.authorization?.replace('Bearer ', '');
+    const token =
+      req.cookies?.['token'] ?? req.headers.authorization?.replace('Bearer ', '');
 
     if (!token) throw new UnauthorizedException('Token no proporcionado');
 

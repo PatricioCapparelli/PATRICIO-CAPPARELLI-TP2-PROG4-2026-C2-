@@ -2,13 +2,10 @@
 <article class="publicacion">
   <header class="publicacion-cabecera">
     @if (p.autor.imagenPerfil) {
-      <img
-        class="avatar-mini"
-        [src]="apiUrl + p.autor.imagenPerfil"
-        alt="Foto de perfil de {{ p.autor.nombreUsuario }}"
-      />
+    <img class="avatar-mini" [src]="p.autor.imagenPerfil | urlImagen"
+      alt="Foto de perfil de {{ p.autor.nombreUsuario }}" />
     } @else {
-      <div class="avatar-mini avatar-inicial">{{ p.autor.nombre[0] }}{{ p.autor.apellido[0] }}</div>
+    <div class="avatar-mini avatar-inicial">{{ p.autor.nombre[0] }}{{ p.autor.apellido[0] }}</div>
     }
 
     <div class="publicacion-autor">
@@ -17,9 +14,9 @@
     </div>
 
     @if (puedeEliminar() && !soloLectura()) {
-      <button type="button" class="btn btn-peligro btn-chico" (click)="eliminar.emit()">
-        Eliminar
-      </button>
+    <button type="button" class="btn btn-peligro btn-chico" (click)="eliminar.emit()">
+      Eliminar
+    </button>
     }
   </header>
 
@@ -27,34 +24,29 @@
   <p class="publicacion-texto">{{ p.descripcion }}</p>
 
   @if (p.imagen) {
-    <img class="publicacion-imagen" [src]="apiUrl + p.imagen" alt="Imagen de la publicación" />
+  <img class="publicacion-imagen" [src]="p.imagen | urlImagen" alt="Imagen de la publicación" />
   }
 
   <footer class="publicacion-pie">
     @if (!soloLectura()) {
-      <button
-        type="button"
-        class="btn-megusta"
-        [class.activo]="p.meGustaMio"
-        [attr.aria-pressed]="p.meGustaMio"
-        (click)="meGusta.emit()"
-      >
-        {{ p.meGustaMio ? 'Quitar me gusta' : 'Me gusta' }}
-      </button>
+    <button type="button" class="btn-megusta" [class.activo]="p.meGustaMio" [attr.aria-pressed]="p.meGustaMio"
+      (click)="meGusta.emit()">
+      {{ p.meGustaMio ? 'Quitar me gusta' : 'Me gusta' }}
+    </button>
     }
     <span class="ayuda">{{ p.cantidadMeGusta }} me gusta</span>
   </footer>
 
   @if (mostrarComentarios()) {
-    <section class="comentarios">
-      <h4>Comentarios</h4>
-      @for (c of p.comentarios ?? []; track c._id) {
-        <p class="comentario">
-          <strong>{{ c.autor.nombre }} {{ c.autor.apellido }}:</strong> {{ c.texto }}
-        </p>
-      } @empty {
-        <p class="ayuda">Todavía no hay comentarios.</p>
-      }
-    </section>
+  <section class="comentarios">
+    <h4>Comentarios</h4>
+    @for (c of p.comentarios ?? []; track c._id) {
+    <p class="comentario">
+      <strong>{{ c.autor.nombre }} {{ c.autor.apellido }}:</strong> {{ c.texto }}
+    </p>
+    } @empty {
+    <p class="ayuda">Todavía no hay comentarios.</p>
+    }
+  </section>
   }
 </article>

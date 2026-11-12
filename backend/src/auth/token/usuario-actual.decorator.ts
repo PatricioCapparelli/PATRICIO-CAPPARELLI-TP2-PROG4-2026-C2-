@@ -7,7 +7,6 @@ export interface UsuarioToken {
   perfil: string;
 }
 
-// Devuelve el payload del token que dejó TokenGuard en request.user
 export const UsuarioActual = createParamDecorator(
   (_data: unknown, ctx: ExecutionContext): UsuarioToken => {
     const req = ctx.switchToHttp().getRequest<RequestConUsuario>();

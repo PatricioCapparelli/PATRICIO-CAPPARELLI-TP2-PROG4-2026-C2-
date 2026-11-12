@@ -1,10 +1,12 @@
-import {BadRequestException,ConflictException,ForbiddenException,Injectable,NotFoundException,
+import {
+  BadRequestException, ConflictException, ForbiddenException, Injectable, NotFoundException,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types, isObjectIdOrHexString } from 'mongoose';
 import type { UsuarioToken } from '../auth/token/usuario-actual.decorator';
 import { CreatePublicacionDto } from './dto/create-publicacion.dto';
 import { Publicacion, PublicacionDocument } from './entities/publicacion.entity';
+import { CloudinaryService } from '../cloudinary/cloudinary.service';
 
 const CAMPOS_AUTOR = 'nombre apellido nombreUsuario imagenPerfil';
 
@@ -39,9 +41,13 @@ export class PublicacionesService {
   constructor(
     @InjectModel(Publicacion.name)
     private readonly model: Model<PublicacionDocument>,
-  ) {}
+    private readonly cloudinary: CloudinaryService,
+  ) { }
 
-  async crear(dto: CreatePublicacionDto, autorId: string, imagen?: string) {
+  async crear(dto: CreatePublicacionDto, autorId: string, archivo?: Express.Multer.File) {
+  const imagen = archivo
+    ? await this.cloudinary.subirImagen(archivo, 'remember/publicaciones')
+    : undefined;
     const creada = await this.model.create({
       ...dto,
       autor: new Types.ObjectId(autorId),

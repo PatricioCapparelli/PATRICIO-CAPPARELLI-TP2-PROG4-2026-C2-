@@ -10,23 +10,26 @@ import { UsuariosService } from '../usuarios/usuarios.service';
 import { UsuarioDocument } from '../usuarios/entities/usuario.entity';
 import { RegistroDto } from './dto/registro.dto';
 import { LoginDto } from './dto/login.dto';
+import { CloudinaryService } from '../cloudinary/cloudinary.service';
 
 @Injectable()
 export class AuthService {
   constructor(
     private readonly usuariosService: UsuariosService,
     private readonly config: ConfigService,
-  ) {}
+    private readonly cloudinary: CloudinaryService,
+  ) { }
 
-  async registro(dto: RegistroDto, imagenPerfil?: string) {
-    // 1. Revisar que el usuario no exista
+  async registro(dto: RegistroDto, archivo?: Express.Multer.File) {
     if (await this.usuariosService.existe(dto.correo, dto.nombreUsuario)) {
       throw new ConflictException(
         'El correo o el nombre de usuario ya están registrados',
       );
     }
+    const imagenPerfil = archivo
+      ? await this.cloudinary.subirImagen(archivo, 'remember/perfiles')
+      : undefined;
 
-    // 2. Encriptar la contraseña y guardar en la DB
     const hash = await bcrypt.hash(dto.password, 10);
     const usuario = await this.usuariosService.crear({
       ...dto,
@@ -35,7 +38,6 @@ export class AuthService {
       imagenPerfil,
     });
 
-    // 3. Devolver token y datos del usuario
     return {
       access_token: this.generarToken(usuario),
       usuario: this.sinPassword(usuario),

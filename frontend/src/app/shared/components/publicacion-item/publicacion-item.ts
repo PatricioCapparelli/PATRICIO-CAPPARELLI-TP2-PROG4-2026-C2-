@@ -1,14 +1,17 @@
 import { DatePipe } from '@angular/common';
 import { Component, input, output } from '@angular/core';
-import { API_URL } from '../../../core/config';
+import { environment } from '../../../../environments/environment';
 import { Publicacion } from '../../models/publicacion';
+import { UrlImagenPipe } from '../../pipes/url-imagen.pipe';
 
 @Component({
   selector: 'app-publicacion-item',
-  imports: [DatePipe],
+  imports: [DatePipe, UrlImagenPipe],
   templateUrl: './publicacion-item.html',
 })
 export class PublicacionItem {
+  readonly apiUrl = environment.API_URL;
+  
   publicacion = input.required<Publicacion>();
   puedeEliminar = input(false);
   soloLectura = input(false);
@@ -16,6 +19,4 @@ export class PublicacionItem {
 
   meGusta = output<void>();
   eliminar = output<void>();
-
-  readonly apiUrl = API_URL;
 }

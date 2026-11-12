@@ -1,33 +1,22 @@
 import {
-  BadRequestException,
-  Body,
-  Controller,
-  HttpCode,
-  Post,
-  UploadedFile,
-  UseInterceptors,
+  BadRequestException, Body, Controller, HttpCode, Post, UploadedFile, UseInterceptors,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { diskStorage } from 'multer';
-import { unlink } from 'fs/promises';
-import { extname } from 'path';
 import { AuthService } from './auth.service';
 import { RegistroDto } from './dto/registro.dto';
 import { LoginDto } from './dto/login.dto';
+import { Res } from '@nestjs/common';
+import type { Response } from 'express';
+import { opcionesBorrado, opcionesCookie } from './cookie.config';
 
 @Controller('auth')
 export class AuthController {
-  constructor(private readonly authService: AuthService) {}
+  constructor(private readonly authService: AuthService) { }
 
   @Post('registro')
   @HttpCode(201)
   @UseInterceptors(
     FileInterceptor('imagenPerfil', {
-      storage: diskStorage({
-        destination: './uploads/perfiles',
-        filename: (_req, file, cb) =>
-          cb(null, `${Date.now()}${extname(file.originalname)}`),
-      }),
       fileFilter: (_req, file, cb) => {
         if (!file.mimetype.startsWith('image/')) {
           return cb(new BadRequestException('El archivo debe ser una imagen'), false);
@@ -39,21 +28,23 @@ export class AuthController {
   )
   async registro(
     @Body() dto: RegistroDto,
+    @Res({ passthrough: true }) res: Response,
     @UploadedFile() file?: Express.Multer.File,
   ) {
-    const imagen = file ? `/uploads/perfiles/${file.filename}` : undefined;
-    try {
-      return await this.authService.registro(dto, imagen);
-    } catch (error) {
-      // si el registro falla, no dejamos la imagen huérfana en disco
-      if (file) await unlink(file.path).catch(() => undefined);
-      throw error;
-    }
+    const respuesta = await this.authService.registro(dto, file);
+    res.cookie('token', respuesta.access_token, opcionesCookie());
+    return respuesta;
   }
-
   @Post('login')
   @HttpCode(200)
-  login(@Body() dto: LoginDto) {
-    return this.authService.login(dto);
+  async login(@Body() dto: LoginDto, @Res({ passthrough: true }) res: Response) {
+    const respuesta = await this.authService.login(dto);
+    res.cookie('token', respuesta.access_token, opcionesCookie());
+    return respuesta;
+  }
+  @Post('logout')
+  @HttpCode(204)
+  logout(@Res({ passthrough: true }) res: Response) {
+    res.clearCookie('token', opcionesBorrado());
   }
 }
