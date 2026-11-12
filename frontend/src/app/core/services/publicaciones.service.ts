@@ -1,12 +1,7 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
-import { API_URL } from '../config';
-import {
-  EstadoMeGusta,
-  Orden,
-  PaginaPublicaciones,
-  Publicacion,
-} from '../../shared/models/publicacion';
+import { environment } from '../../../environments/environment';
+import {EstadoMeGusta,Orden,PaginaPublicaciones,Publicacion} from '../../shared/models/publicacion';
 
 export interface OpcionesListado {
   orden: Orden;
@@ -18,7 +13,7 @@ export interface OpcionesListado {
 @Injectable({ providedIn: 'root' })
 export class PublicacionesService {
   private http = inject(HttpClient);
-  private url = `${API_URL}/publicaciones`;
+  private url = `${environment.API_URL}/publicaciones`;
 
   listar(opciones: OpcionesListado) {
     let params = new HttpParams()

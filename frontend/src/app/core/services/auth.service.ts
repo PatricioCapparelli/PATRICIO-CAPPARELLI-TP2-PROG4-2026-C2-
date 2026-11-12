@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable, computed, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { tap } from 'rxjs';
-import { API_URL } from '../config';
+import { environment } from '../../../environments/environment';
 import { RespuestaAuth, Usuario } from '../../shared/models/usuario';
 
 const CLAVE_TOKEN = 'token';
@@ -22,18 +22,18 @@ export class AuthService {
 
   registro(datos: FormData) {
     return this.http
-      .post<RespuestaAuth>(`${API_URL}/auth/registro`, datos)
+      .post<RespuestaAuth>(`${environment.API_URL}/auth/registro`, datos)
       .pipe(tap((r) => this.guardarSesion(r)));
   }
 
   login(identificador: string, password: string) {
     return this.http
-      .post<RespuestaAuth>(`${API_URL}/auth/login`, { identificador, password })
+      .post<RespuestaAuth>(`${environment.API_URL}/auth/login`, { identificador, password })
       .pipe(tap((r) => this.guardarSesion(r)));
   }
 
   logout() {
-    this.http.post(`${API_URL}/auth/logout`, {}).subscribe({ error: () => undefined });
+    this.http.post(`${environment.API_URL}/auth/logout`, {}).subscribe({ error: () => undefined });
     localStorage.removeItem(CLAVE_TOKEN);
     localStorage.removeItem(CLAVE_USUARIO);
     this.usuario.set(null);
