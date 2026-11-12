@@ -33,12 +33,13 @@ export class AuthService {
   }
 
   logout() {
+    this.http.post(`${API_URL}/auth/logout`, {}).subscribe({ error: () => undefined });
     localStorage.removeItem(CLAVE_TOKEN);
     localStorage.removeItem(CLAVE_USUARIO);
     this.usuario.set(null);
     this.router.navigate(['/login']);
   }
-
+  
   private guardarSesion(r: RespuestaAuth) {
     localStorage.setItem(CLAVE_TOKEN, r.access_token);
     localStorage.setItem(CLAVE_USUARIO, JSON.stringify(r.usuario));

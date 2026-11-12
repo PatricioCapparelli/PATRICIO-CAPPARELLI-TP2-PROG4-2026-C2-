@@ -7,9 +7,10 @@ export const tokenInterceptor: HttpInterceptorFn = (req, next) => {
   const auth = inject(AuthService);
   const token = auth.token;
 
-  const peticion = token
-    ? req.clone({ setHeaders: { Authorization: `Bearer ${token}` } })
-    : req;
+  let peticion = req.clone({ withCredentials: true });
+  if (token) {
+    peticion = peticion.clone({ setHeaders: { Authorization: `Bearer ${token}` } });
+  }
 
   return next(peticion).pipe(
     catchError((error: HttpErrorResponse) => {
