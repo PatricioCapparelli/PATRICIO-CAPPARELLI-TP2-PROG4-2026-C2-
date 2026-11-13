@@ -27,7 +27,6 @@ export class ModalService {
     this.modal.set({ tipo: 'info', titulo, mensajes: [mensaje] });
   }
 
-  // Pide confirmación: solo ejecuta alConfirmar si el usuario acepta
   confirmar(titulo: string, mensaje: string, alConfirmar: () => void) {
     this.modal.set({ tipo: 'confirmar', titulo, mensajes: [mensaje], alAceptar: alConfirmar });
   }

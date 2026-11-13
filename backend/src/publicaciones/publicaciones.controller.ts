@@ -1,5 +1,5 @@
-import {BadRequestException,Body,Controller,DefaultValuePipe,Delete,Get,HttpCode,
-  Param,ParseIntPipe,Post,Query,UploadedFile,UseGuards,UseInterceptors,
+import {BadRequestException, Body, Controller, DefaultValuePipe, Delete, Get, HttpCode,
+Param, ParseIntPipe, Post, Query, UploadedFile, UseGuards, UseInterceptors,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
@@ -16,28 +16,28 @@ const LIMITE_MAXIMO = 50;
 @Controller('publicaciones')
 @UseGuards(TokenGuard)
 export class PublicacionesController {
-  constructor(private readonly publicacionesService: PublicacionesService) {}
+  constructor(private readonly publicacionesService: PublicacionesService) { }
 
   @Post()
-@HttpCode(201)
-@UseInterceptors(
-  FileInterceptor('imagen', {
-    fileFilter: (_req, file, cb) => {
-      if (!file.mimetype.startsWith('image/')) {
-        return cb(new BadRequestException('El archivo debe ser una imagen'), false);
-      }
-      cb(null, true);
-    },
-    limits: { fileSize: 5 * 1024 * 1024 }, // 5 MB
-  }),
-)
-crear(
-  @Body() dto: CreatePublicacionDto,
-  @UsuarioActual() usuario: UsuarioToken,
-  @UploadedFile() file: Express.Multer.File | undefined,
-) {
-  return this.publicacionesService.crear(dto, usuario.id, file);
-}
+  @HttpCode(201)
+  @UseInterceptors(
+    FileInterceptor('imagen', {
+      fileFilter: (_req, file, cb) => {
+        if (!file.mimetype.startsWith('image/')) {
+          return cb(new BadRequestException('El archivo debe ser una imagen'), false);
+        }
+        cb(null, true);
+      },
+      limits: { fileSize: 5 * 1024 * 1024 }, // 5 MB
+    }),
+  )
+  crear(
+    @Body() dto: CreatePublicacionDto,
+    @UsuarioActual() usuario: UsuarioToken,
+    @UploadedFile() file: Express.Multer.File | undefined,
+  ) {
+    return this.publicacionesService.crear(dto, usuario.id, file);
+  }
 
   @Get()
   listar(
