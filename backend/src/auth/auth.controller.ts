@@ -31,16 +31,16 @@ export class AuthController {
     @Res({ passthrough: true }) res: Response,
     @UploadedFile() file?: Express.Multer.File,
   ) {
-    const respuesta = await this.authService.registro(dto, file);
-    res.cookie('token', respuesta.access_token, opcionesCookie());
-    return respuesta;
+    const { access_token, usuario } = await this.authService.registro(dto, file);
+    res.cookie('token', access_token, opcionesCookie());
+    return { usuario };
   }
   @Post('login')
   @HttpCode(200)
   async login(@Body() dto: LoginDto, @Res({ passthrough: true }) res: Response) {
-    const respuesta = await this.authService.login(dto);
-    res.cookie('token', respuesta.access_token, opcionesCookie());
-    return respuesta;
+    const { access_token, usuario } = await this.authService.login(dto);
+    res.cookie('token', access_token, opcionesCookie());
+    return { usuario };
   }
   @Post('logout')
   @HttpCode(204)

@@ -14,16 +14,17 @@ export class TokenGuard implements CanActivate {
 
   canActivate(context: ExecutionContext): boolean {
     const req = context.switchToHttp().getRequest<RequestConUsuario>();
-    const token =
-      req.cookies?.['token'] ?? req.headers.authorization?.replace('Bearer ', '');
+    const token = req.cookies?.['token'];
 
-    if (!token) throw new UnauthorizedException('Token no proporcionado');
+    if (!token) {
+      throw new UnauthorizedException('Tu sesión expiró. Volvé a iniciar sesión.');
+    }
 
     try {
       req.user = jwt.verify(token, this.config.getOrThrow<string>('JWT_SECRET'));
       return true;
     } catch {
-      throw new UnauthorizedException('Token no válido o expirado');
+      throw new UnauthorizedException('Tu sesión expiró. Volvé a iniciar sesión.');
     }
   }
 }

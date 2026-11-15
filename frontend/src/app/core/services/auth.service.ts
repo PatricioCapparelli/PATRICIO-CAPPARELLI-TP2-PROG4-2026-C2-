@@ -5,8 +5,7 @@ import { tap } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { RespuestaAuth, Usuario } from '../../shared/models/usuario';
 
-const CLAVE_TOKEN = 'token';
-const CLAVE_USUARIO = 'usuario';
+const CLAVE_USUARIO = 'usuario'; 
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
@@ -15,10 +14,6 @@ export class AuthService {
 
   usuario = signal<Usuario | null>(this.leerUsuario());
   logueado = computed(() => !!this.usuario());
-
-  get token(): string | null {
-    return localStorage.getItem(CLAVE_TOKEN);
-  }
 
   registro(datos: FormData) {
     return this.http
@@ -34,14 +29,12 @@ export class AuthService {
 
   logout() {
     this.http.post(`${environment.API_URL}/auth/logout`, {}).subscribe({ error: () => undefined });
-    localStorage.removeItem(CLAVE_TOKEN);
-    localStorage.removeItem(CLAVE_USUARIO);
+    localStorage.removeItem(CLAVE_USUARIO); 
     this.usuario.set(null);
     this.router.navigate(['/login']);
   }
-  
+
   private guardarSesion(r: RespuestaAuth) {
-    localStorage.setItem(CLAVE_TOKEN, r.access_token);
     localStorage.setItem(CLAVE_USUARIO, JSON.stringify(r.usuario));
     this.usuario.set(r.usuario);
   }

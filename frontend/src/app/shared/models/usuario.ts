@@ -11,6 +11,5 @@ export interface Usuario {
 }
 
 export interface RespuestaAuth {
-  access_token: string;
   usuario: Usuario;
 }

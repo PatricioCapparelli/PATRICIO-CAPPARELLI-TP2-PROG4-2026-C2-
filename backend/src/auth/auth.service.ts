@@ -50,7 +50,7 @@ export class AuthService {
     );
 
     if (!usuario || !(await bcrypt.compare(dto.password, usuario.password))) {
-      throw new UnauthorizedException('Credenciales inválidas');
+      throw new UnauthorizedException('El usuario o la contraseña son incorrectos.');
     }
 
     return {
