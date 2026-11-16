@@ -45,9 +45,9 @@ export class PublicacionesService {
   ) { }
 
   async crear(dto: CreatePublicacionDto, autorId: string, archivo?: Express.Multer.File) {
-  const imagen = archivo
-    ? await this.cloudinary.subirImagen(archivo, 'remember/publicaciones')
-    : undefined;
+    const imagen = archivo
+      ? await this.cloudinary.subirImagen(archivo, 'remember/publicaciones')
+      : undefined;
     const creada = await this.model.create({
       ...dto,
       autor: new Types.ObjectId(autorId),
@@ -159,5 +159,15 @@ export class PublicacionesService {
   private async asegurarExiste(id: string) {
     const existe = await this.model.exists({ _id: id, activa: true });
     if (!existe) throw new NotFoundException('La publicación no existe');
+  }
+
+  async obtener(id: string, usuarioId: string) {
+    this.validarId(id);
+    const publicacion = await this.model
+      .findOne({ _id: id, activa: true })
+      .populate('autor', CAMPOS_AUTOR)
+      .lean<PublicacionPoblada>();
+    if (!publicacion) throw new NotFoundException('La publicación no existe');
+    return this.aRespuesta(publicacion, usuarioId);
   }
 }

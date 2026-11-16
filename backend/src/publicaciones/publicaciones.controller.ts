@@ -1,5 +1,6 @@
-import {BadRequestException, Body, Controller, DefaultValuePipe, Delete, Get, HttpCode,
-Param, ParseIntPipe, Post, Query, UploadedFile, UseGuards, UseInterceptors,
+import {
+  BadRequestException, Body, Controller, DefaultValuePipe, Delete, Get, HttpCode,
+  Param, ParseIntPipe, Post, Query, UploadedFile, UseGuards, UseInterceptors,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
@@ -28,7 +29,7 @@ export class PublicacionesController {
         }
         cb(null, true);
       },
-      limits: { fileSize: 5 * 1024 * 1024 }, // 5 MB
+      limits: { fileSize: 5 * 1024 * 1024 },
     }),
   )
   crear(
@@ -57,6 +58,11 @@ export class PublicacionesController {
       { orden, offset, limit: Math.min(limit, LIMITE_MAXIMO), usuario: autor },
       usuario.id,
     );
+  }
+
+  @Get(':id')
+  obtener(@Param('id') id: string, @UsuarioActual() usuario: UsuarioToken) {
+    return this.publicacionesService.obtener(id, usuario.id);
   }
 
   @Delete(':id')

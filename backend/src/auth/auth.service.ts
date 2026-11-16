@@ -1,8 +1,4 @@
-import {
-  ConflictException,
-  Injectable,
-  UnauthorizedException,
-} from '@nestjs/common';
+import {ConflictException,Injectable,UnauthorizedException,} from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import * as bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
@@ -11,6 +7,7 @@ import { UsuarioDocument } from '../usuarios/entities/usuario.entity';
 import { RegistroDto } from './dto/registro.dto';
 import { LoginDto } from './dto/login.dto';
 import { CloudinaryService } from '../cloudinary/cloudinary.service';
+import type { UsuarioToken } from './token/usuario-actual.decorator';
 
 @Injectable()
 export class AuthService {
@@ -60,17 +57,31 @@ export class AuthService {
   }
 
   generarToken(usuario: UsuarioDocument) {
-    const payload = {
+    return this.firmar({
       user: usuario.nombreUsuario,
       id: usuario._id.toString(),
       perfil: usuario.perfil,
-    };
-
-    return jwt.sign(payload, this.config.getOrThrow<string>('JWT_SECRET'), {
-      issuer: 'MI SERVER',
-      expiresIn: '1d',
     });
   }
+
+  refrescar(token: UsuarioToken) {
+    return this.firmar({ user: token.user, id: token.id, perfil: token.perfil });
+  }
+
+  async autorizar(token: UsuarioToken) {
+    const usuario = await this.usuariosService.buscarPorId(token.id);
+    if (!usuario) {
+      throw new UnauthorizedException('Tu sesión no es válida. Volvé a iniciar sesión.');
+    }
+    return { usuario: this.sinPassword(usuario), expiraEn: (token.exp ?? 0) * 1000 };
+  }
+
+  private firmar(payload: { user: string; id: string; perfil: string }) {
+  return jwt.sign(payload, this.config.getOrThrow<string>('JWT_SECRET'), {
+    issuer: 'MI SERVER',
+    expiresIn: '15m',
+  });
+}
 
   private sinPassword(usuario: UsuarioDocument) {
     const { password: _password, ...resto } = usuario.toObject();

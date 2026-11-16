@@ -13,3 +13,8 @@ export interface Usuario {
 export interface RespuestaAuth {
   usuario: Usuario;
 }
+
+export interface RespuestaAutorizar {
+  usuario: Usuario;
+  expiraEn: number;
+}

@@ -5,6 +5,7 @@ export interface UsuarioToken {
   id: string;
   user: string;
   perfil: string;
+  exp?: number;
 }
 
 export const UsuarioActual = createParamDecorator(

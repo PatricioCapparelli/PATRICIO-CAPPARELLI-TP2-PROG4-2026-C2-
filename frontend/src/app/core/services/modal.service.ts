@@ -5,6 +5,8 @@ export interface ModalData {
   titulo: string;
   mensajes: string[];
   alAceptar?: () => void;
+  textoConfirmar?: string;
+  textoCancelar?: string;
 }
 
 @Injectable({ providedIn: 'root' })
@@ -27,8 +29,20 @@ export class ModalService {
     this.modal.set({ tipo: 'info', titulo, mensajes: [mensaje] });
   }
 
-  confirmar(titulo: string, mensaje: string, alConfirmar: () => void) {
-    this.modal.set({ tipo: 'confirmar', titulo, mensajes: [mensaje], alAceptar: alConfirmar });
+  // Pide confirmación: solo ejecuta alConfirmar si el usuario acepta
+  confirmar(
+    titulo: string,
+    mensaje: string,
+    alConfirmar: () => void,
+    opciones?: { textoConfirmar?: string; textoCancelar?: string },
+  ) {
+    this.modal.set({
+      tipo: 'confirmar',
+      titulo,
+      mensajes: [mensaje],
+      alAceptar: alConfirmar,
+      ...opciones,
+    });
   }
 
   cerrar() {

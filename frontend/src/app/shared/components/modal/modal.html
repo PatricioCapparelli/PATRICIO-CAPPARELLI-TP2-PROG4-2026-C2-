@@ -21,10 +21,10 @@
       <div class="modal-pie">
         @if (m.tipo === 'confirmar') {
           <button type="button" class="btn btn-secundario" (click)="modalService.cancelar()">
-            Cancelar
+            {{ m.textoCancelar ?? 'Cancelar' }}
           </button>
           <button type="button" class="btn btn-primario" (click)="modalService.cerrar()">
-            Confirmar
+            {{ m.textoConfirmar ?? 'Confirmar' }}
           </button>
         } @else {
           <button type="button" class="btn btn-primario" (click)="modalService.cerrar()">

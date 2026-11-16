@@ -527,3 +527,106 @@ a:hover {
 .modal-pie .btn + .btn {
   margin-left: 0.5rem;
 }
+
+/* ---------- Pantalla de carga ---------- */
+.cargando-pantalla {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  color: var(--brand-dark);
+}
+
+.spinner {
+  width: 56px;
+  height: 56px;
+  border: 5px solid var(--borde);
+  border-top-color: var(--brand);
+  border-radius: 50%;
+  animation: girar 0.9s linear infinite;
+}
+
+@keyframes girar {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .spinner {
+    animation-duration: 3s;
+  }
+}
+
+/* ---------- Detalle de publicación y comentarios ---------- */
+.contenedor-ancho {
+  max-width: 960px;
+}
+
+.volver {
+  display: inline-block;
+  margin-bottom: 1rem;
+}
+
+.publicacion-titulo a {
+  color: inherit;
+}
+
+.publicacion.grande {
+  padding: 2rem;
+}
+
+.publicacion.grande .publicacion-titulo {
+  font-size: 1.9rem;
+}
+
+.publicacion.grande .publicacion-texto {
+  font-size: 1.1rem;
+}
+
+.publicacion.grande .publicacion-imagen {
+  max-height: none;
+  object-fit: contain;
+}
+
+.comentarios-seccion {
+  margin-top: 1.5rem;
+}
+
+.form-comentario {
+  margin-bottom: 1.5rem;
+  padding: 1rem 1.25rem;
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: var(--sombra);
+}
+
+.comentario-caja {
+  margin-bottom: 0.75rem;
+  padding: 1rem 1.25rem;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: var(--sombra);
+}
+
+.comentario-cabecera {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 0.5rem;
+}
+
+.comentario-texto {
+  white-space: pre-line;
+}
+
+.comentario-acciones {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.editado {
+  font-style: italic;
+}

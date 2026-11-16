@@ -1,0 +1,73 @@
+<section class="comentarios-seccion">
+  <h3>Comentarios ({{ total() }})</h3>
+
+  <form class="form-comentario" [formGroup]="form" (ngSubmit)="publicar()" novalidate>
+    <div class="campo">
+      <label for="mensaje">Escribí un comentario</label>
+      <textarea id="mensaje" rows="3" formControlName="mensaje" [class.con-error]="invalido(form.controls.mensaje)"></textarea>
+      <app-error-campo [control]="form.controls.mensaje" />
+    </div>
+    <button class="btn btn-primario" type="submit" [disabled]="enviando()">
+      {{ enviando() ? 'Enviando...' : 'Comentar' }}
+    </button>
+  </form>
+
+  @for (c of comentarios(); track c._id) {
+    <article class="comentario-caja">
+      <header class="comentario-cabecera">
+        @if (c.autor.imagenPerfil) {
+          <img
+            class="avatar-mini"
+            [src]="c.autor.imagenPerfil | urlImagen"
+            alt="Foto de perfil de {{ c.autor.nombreUsuario }}"
+          />
+        } @else {
+          <div class="avatar-mini avatar-inicial">{{ c.autor.nombre[0] }}{{ c.autor.apellido[0] }}</div>
+        }
+        <div class="publicacion-autor">
+          <strong>{{ c.autor.nombre }} {{ c.autor.apellido }}</strong>
+          <span class="ayuda">
+            {{ c.createdAt | date: 'dd/MM/yyyy HH:mm' }}
+            @if (c.modificado) {
+              <span class="editado">(editado)</span>
+            }
+          </span>
+        </div>
+      </header>
+
+      @if (editandoId() === c._id) {
+        <div class="campo">
+          <textarea rows="3" [formControl]="edicion" [class.con-error]="invalido(edicion)" aria-label="Editar comentario"></textarea>
+          <app-error-campo [control]="edicion" />
+        </div>
+        <div class="comentario-acciones">
+          <button type="button" class="btn btn-primario btn-chico" (click)="guardarEdicion(c)" [disabled]="guardando()">
+            {{ guardando() ? 'Guardando...' : 'Guardar' }}
+          </button>
+          <button type="button" class="btn btn-secundario btn-chico" (click)="cancelarEdicion()">
+            Cancelar
+          </button>
+        </div>
+      } @else {
+        <p class="comentario-texto">{{ c.mensaje }}</p>
+        @if (esMio(c)) {
+          <div class="comentario-acciones">
+            <button type="button" class="btn btn-secundario btn-chico" (click)="editar(c)">
+              Editar
+            </button>
+          </div>
+        }
+      }
+    </article>
+  } @empty {
+    @if (!cargando()) {
+      <p class="ayuda">Todavía no hay comentarios. ¡Sé el primero!</p>
+    }
+  }
+
+  @if (hayMas()) {
+    <button type="button" class="btn btn-secundario" (click)="cargar()" [disabled]="cargando()">
+      {{ cargando() ? 'Cargando...' : 'Cargar más' }}
+    </button>
+  }
+</section>

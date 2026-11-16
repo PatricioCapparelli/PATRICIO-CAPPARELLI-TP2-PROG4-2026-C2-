@@ -8,9 +8,17 @@ export interface AutorResumen {
 
 export interface Comentario {
   _id: string;
-  texto: string;
+  mensaje: string;
+  modificado: boolean;
   autor: AutorResumen;
   createdAt: string;
+}
+
+export interface PaginaComentarios {
+  items: Comentario[];
+  total: number;
+  offset: number;
+  limit: number;
 }
 
 export interface Publicacion {

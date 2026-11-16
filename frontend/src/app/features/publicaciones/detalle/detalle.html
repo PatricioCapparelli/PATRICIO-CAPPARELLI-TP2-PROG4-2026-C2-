@@ -1,0 +1,20 @@
+<div class="contenedor contenedor-ancho">
+  <a class="volver" routerLink="/publicaciones">Volver</a>
+
+  @if (cargando()) {
+    <p class="ayuda">Cargando publicación...</p>
+  } @else if (publicacion(); as p) {
+    <app-publicacion-item
+      [publicacion]="p"
+      [puedeEliminar]="puedeEliminar(p)"
+      [grande]="true"
+      (meGusta)="alternarMeGusta()"
+      (eliminar)="pedirEliminar()"
+    />
+    <app-comentarios [publicacionId]="p._id" />
+  } @else {
+    <div class="card vacio">
+      <p>La publicación no existe o fue eliminada.</p>
+    </div>
+  }
+</div>

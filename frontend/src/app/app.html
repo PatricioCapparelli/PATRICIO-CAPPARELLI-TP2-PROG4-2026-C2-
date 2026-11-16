@@ -1,3 +1,5 @@
-<app-navbar />
+@if (auth.verificada()) {
+  <app-navbar />
+}
 <router-outlet />
 <app-modal />

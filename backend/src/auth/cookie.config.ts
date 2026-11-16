@@ -4,7 +4,7 @@ export function opcionesCookie() {
         httpOnly: true,
         secure: produccion,
         sameSite: produccion ? ('none' as const) : ('lax' as const),
-        maxAge: 24 * 60 * 60 * 1000, 
+        maxAge: 15 * 60 * 1000,
         path: '/',
     };
 }

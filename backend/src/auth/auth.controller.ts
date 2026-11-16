@@ -8,6 +8,10 @@ import { LoginDto } from './dto/login.dto';
 import { Res } from '@nestjs/common';
 import type { Response } from 'express';
 import { opcionesBorrado, opcionesCookie } from './cookie.config';
+import { UseGuards } from '@nestjs/common';
+import { TokenGuard } from './token/token.guard';
+import { UsuarioActual } from './token/usuario-actual.decorator';
+import type { UsuarioToken } from './token/usuario-actual.decorator';
 
 @Controller('auth')
 export class AuthController {
@@ -23,7 +27,7 @@ export class AuthController {
         }
         cb(null, true);
       },
-      limits: { fileSize: 2 * 1024 * 1024 }, // 2 MB
+      limits: { fileSize: 2 * 1024 * 1024 }, 
     }),
   )
   async registro(
@@ -46,5 +50,22 @@ export class AuthController {
   @HttpCode(204)
   logout(@Res({ passthrough: true }) res: Response) {
     res.clearCookie('token', opcionesBorrado());
+  }
+  @Post('autorizar')
+  @HttpCode(200)
+  @UseGuards(TokenGuard)
+  autorizar(@UsuarioActual() usuario: UsuarioToken) {
+    return this.authService.autorizar(usuario);
+  }
+  @Post('refrescar')
+  @HttpCode(200)
+  @UseGuards(TokenGuard)
+  refrescar(
+    @UsuarioActual() usuario: UsuarioToken,
+    @Res({ passthrough: true }) res: Response,
+  ) {
+    const token = this.authService.refrescar(usuario);
+    res.cookie('token', token, opcionesCookie());
+    return { mensaje: 'Sesión extendida por 15 minutos más' };
   }
 }
