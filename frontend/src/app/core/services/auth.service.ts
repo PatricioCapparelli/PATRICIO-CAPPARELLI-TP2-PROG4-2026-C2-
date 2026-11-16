@@ -56,7 +56,6 @@ export class AuthService {
   }
 
   logout() {
-    // el backend borra la cookie; si falla igual se cierra la sesión local
     this.http.post(`${environment.API_URL}/auth/logout`, {}).subscribe({ error: () => undefined });
     this.limpiarSesion();
     this.router.navigate(['/login']);

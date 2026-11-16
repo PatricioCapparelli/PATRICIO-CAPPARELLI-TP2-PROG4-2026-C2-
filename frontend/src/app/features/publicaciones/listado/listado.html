@@ -1,33 +1,56 @@
 <div class="contenedor">
-  <h2>Publicaciones</h2>
+  <div class="card ancha publicacion-usuario">
+    <img [src]="auth.usuario()?.imagenPerfil" [alt]="auth.usuario()?.nombre" class="avatar-mini" />
 
-  <form class="card ancha nueva-publicacion" [formGroup]="form" (ngSubmit)="publicar()" novalidate>
-    <h3>Nueva publicación</h3>
-
-    <div class="campo">
-      <label for="titulo">Título</label>
-      <input id="titulo" formControlName="titulo" [class.con-error]="invalido(f.titulo)" />
-      <app-error-campo [control]="f.titulo" />
-    </div>
-
-    <div class="campo">
-      <label for="descripcion">Descripción</label>
-      <textarea id="descripcion" rows="3" formControlName="descripcion" [class.con-error]="invalido(f.descripcion)"></textarea>
-      <app-error-campo [control]="f.descripcion" />
-    </div>
-
-    <div class="campo">
-      <label for="imagen">Imagen (opcional)</label>
-      <input #archivoInput id="imagen" type="file" accept="image/*" (change)="onArchivo($event)" [class.con-error]="errorArchivo()" />
-      @if (errorArchivo()) {
-        <span class="error-texto">{{ errorArchivo() }}</span>
-      }
-    </div>
-
-    <button class="btn btn-primario" type="submit" [disabled]="creando()">
-      {{ creando() ? 'Publicando...' : 'Publicar' }}
+    <button type="button" id="pub" class="btn-abrir-modal" (click)="abrirModal()">
+      Que hacés {{ auth.usuario()?.nombreUsuario }}, Publicate algo!
     </button>
-  </form>
+  </div>
+
+  @if (modalAbierto()) {
+  <div class="modal-backdrop" (click)="cerrarModal()">
+    <div class="card modal-contenido" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <button type="button" class="btn-cerrar" (click)="cerrarModal()" [disabled]="creando()" aria-label="Cerrar">
+          ✕
+        </button>
+      </div>
+
+      <form class="nueva-publicacion" [formGroup]="form" (ngSubmit)="publicar()" novalidate>
+        <div class="campo">
+          <label for="titulo">Título</label>
+          <input id="titulo" formControlName="titulo" [class.con-error]="invalido(f.titulo)" />
+          <app-error-campo [control]="f.titulo" />
+        </div>
+
+        <div class="campo">
+          <label for="descripcion">Descripción</label>
+          <textarea id="descripcion" rows="3" formControlName="descripcion"
+            [class.con-error]="invalido(f.descripcion)"></textarea>
+          <app-error-campo [control]="f.descripcion" />
+        </div>
+
+        <div class="campo">
+          <label for="imagen">Imagen (opcional)</label>
+          <input #archivoInput id="imagen" type="file" accept="image/*" (change)="onArchivo($event)"
+            [class.con-error]="errorArchivo()" />
+          @if (errorArchivo()) {
+          <span class="error-texto">{{ errorArchivo() }}</span>
+          }
+        </div>
+
+        <div class="modal-acciones">
+          <button type="button" class="btn btn-secundario" (click)="cerrarModal()" [disabled]="creando()">
+            Cancelar
+          </button>
+          <button class="btn btn-primario" type="submit" [disabled]="creando()">
+            {{ creando() ? 'Publicando...' : 'Publicar' }}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+  }
 
   <div class="barra-orden">
     <span>Ordenar por:</span>
@@ -40,30 +63,27 @@
   </div>
 
   @if (cargando() && publicaciones().length === 0) {
-    <p class="ayuda">Cargando publicaciones...</p>
+  <p class="ayuda">Cargando publicaciones...</p>
   } @else if (publicaciones().length === 0) {
-    <div class="card ancha vacio">
-      <p>Todavía no hay publicaciones.</p>
-      <p class="subtitulo">Sé el primero en publicar algo.</p>
-    </div>
+  <div class="card ancha vacio">
+    <p>Todavía no hay publicaciones.</p>
+    <p class="subtitulo">Sé el primero en publicar algo.</p>
+  </div>
   } @else {
-    @for (p of publicaciones(); track p._id) {
-      <app-publicacion-item
-        [publicacion]="p"
-        [puedeEliminar]="puedeEliminar(p)"
-        (meGusta)="alternarMeGusta(p)"
-        (eliminar)="pedirEliminar(p)"
-      />
-    }
+  @for (p of publicaciones(); track p._id) {
+  <app-publicacion-item [publicacion]="p" [puedeEliminar]="puedeEliminar(p)" (meGusta)="alternarMeGusta(p)"
+    (eliminar)="pedirEliminar(p)" />
+  }
 
-    <nav class="paginacion" aria-label="Paginación">
-      <button type="button" class="btn btn-secundario btn-chico" (click)="irA(pagina() - 1)" [disabled]="pagina() === 1">
-        Anterior
-      </button>
-      <span>Página {{ pagina() }} de {{ totalPaginas() }}</span>
-      <button type="button" class="btn btn-secundario btn-chico" (click)="irA(pagina() + 1)" [disabled]="pagina() >= totalPaginas()">
-        Siguiente
-      </button>
-    </nav>
+  <nav class="paginacion" aria-label="Paginación">
+    <button type="button" class="btn btn-secundario btn-chico" (click)="irA(pagina() - 1)" [disabled]="pagina() === 1">
+      Anterior
+    </button>
+    <span>Página {{ pagina() }} de {{ totalPaginas() }}</span>
+    <button type="button" class="btn btn-secundario btn-chico" (click)="irA(pagina() + 1)"
+      [disabled]="pagina() >= totalPaginas()">
+      Siguiente
+    </button>
+  </nav>
   }
 </div>

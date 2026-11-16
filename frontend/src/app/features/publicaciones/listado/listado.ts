@@ -28,6 +28,7 @@ export class Listado implements OnInit {
   cargando = signal(false);
   creando = signal(false);
   errorArchivo = signal('');
+  modalAbierto = signal(false); 
   totalPaginas = computed(() => Math.max(1, Math.ceil(this.total() / this.limite)));
 
   private archivo: File | null = null;
@@ -50,6 +51,24 @@ export class Listado implements OnInit {
     this.cargar();
   }
 
+  abrirModal() {
+    this.modalAbierto.set(true);
+  }
+
+  cerrarModal() {
+    if (this.creando()) return; 
+    this.modalAbierto.set(false);
+    this.limpiarFormulario();
+  }
+
+  private limpiarFormulario() {
+    this.form.reset();
+    this.archivo = null;
+    this.errorArchivo.set('');
+    const input = this.archivoInput()?.nativeElement;
+    if (input) input.value = '';
+  }
+
   cargar() {
     this.cargando.set(true);
     this.publicacionesService
@@ -60,7 +79,6 @@ export class Listado implements OnInit {
       })
       .subscribe({
         next: (r) => {
-          // si la página quedó vacía (por ejemplo tras eliminar), volvemos a la última
           if (r.items.length === 0 && this.pagina() > 1) {
             this.pagina.set(Math.max(1, Math.ceil(r.total / this.limite)));
             this.cargar();
@@ -164,10 +182,7 @@ export class Listado implements OnInit {
     this.publicacionesService.crear(datos).subscribe({
       next: () => {
         this.creando.set(false);
-        this.form.reset();
-        this.archivo = null;
-        const input = this.archivoInput()?.nativeElement;
-        if (input) input.value = '';
+        this.cerrarModal(); 
         this.orden.set('fecha');
         this.pagina.set(1);
         this.cargar();
