@@ -1,29 +1,110 @@
 @if (auth.usuario(); as u) {
   <div class="contenedor">
-    <div class="card perfil">
-      @if (u.imagenPerfil) {
-        <img [src]="u.imagenPerfil | urlImagen" alt="Foto de perfil" class="avatar" />
-      } @else {
-        <div class="avatar avatar-inicial">{{ u | iniciales }}</div>
-      }
+    @if (editando()) {
+      <form class="card ancha" [formGroup]="form" (ngSubmit)="guardar()" novalidate>
+        <h2>Editar perfil</h2>
+        <p class="subtitulo">Cambiá tus datos y, si querés, tu foto.</p>
 
-      <h3>{{ u.nombre }} {{ u.apellido }}</h3>
-      <p class="usuario">&#64;{{ u.nombreUsuario }}</p>
+        <div class="form-grid">
+          <div class="completo vista-previa">
+            @if (vistaPrevia()) {
+              <img [src]="vistaPrevia()" alt="Vista previa de la nueva foto" class="avatar" />
+            } @else if (u.imagenPerfil) {
+              <img [src]="u.imagenPerfil | urlImagen" alt="Foto de perfil actual" class="avatar" />
+            } @else {
+              <div class="avatar avatar-inicial">{{ u | iniciales }}</div>
+            }
+          </div>
 
-      @if (u.perfil === 'administrador') {
-        <span class="insignia">Administrador</span>
-      }
+          <div class="campo completo">
+            <label for="ep-imagen">Cambiar foto de perfil</label>
+            <input #archivoInput id="ep-imagen" type="file" accept="image/*" (change)="onArchivo($event)" [class.con-error]="errorArchivo()" />
+            @if (errorArchivo()) {
+              <span class="error-texto">{{ errorArchivo() }}</span>
+            } @else {
+              <span class="ayuda">Si no elegís una imagen nueva, se mantiene la actual.</span>
+            }
+          </div>
 
-      @if (u.descripcion) {
-        <p>{{ u.descripcion }}</p>
-      }
+          <div class="campo">
+            <label for="ep-nombre">Nombre</label>
+            <input id="ep-nombre" formControlName="nombre" [class.con-error]="invalido(f.nombre)" />
+            <app-error-campo [control]="f.nombre" />
+          </div>
 
-      <ul class="datos">
-        <li><strong>Correo:</strong> {{ u.correo }}</li>
-        <li><strong>Nacimiento:</strong> {{ u.fechaNacimiento | date: 'dd/MM/yyyy' : 'UTC' }}</li>
-        <li><strong>Perfil:</strong> {{ u.perfil }}</li>
-      </ul>
-    </div>
+          <div class="campo">
+            <label for="ep-apellido">Apellido</label>
+            <input id="ep-apellido" formControlName="apellido" [class.con-error]="invalido(f.apellido)" />
+            <app-error-campo [control]="f.apellido" />
+          </div>
+
+          <div class="campo">
+            <label for="ep-correo">Correo</label>
+            <input id="ep-correo" type="email" formControlName="correo" [class.con-error]="invalido(f.correo)" />
+            <app-error-campo [control]="f.correo" />
+          </div>
+
+          <div class="campo">
+            <label for="ep-usuario">Nombre de usuario</label>
+            <input id="ep-usuario" formControlName="nombreUsuario" [class.con-error]="invalido(f.nombreUsuario)" />
+            <app-error-campo [control]="f.nombreUsuario" />
+          </div>
+
+          <div class="campo">
+            <label for="ep-nacimiento">Fecha de nacimiento</label>
+            <input id="ep-nacimiento" type="date" formControlName="fechaNacimiento" [class.con-error]="invalido(f.fechaNacimiento)" />
+            <app-error-campo [control]="f.fechaNacimiento" />
+          </div>
+
+          <div class="campo completo">
+            <label for="ep-descripcion">Descripción breve</label>
+            <textarea id="ep-descripcion" rows="3" formControlName="descripcion" [class.con-error]="invalido(f.descripcion)"></textarea>
+            <div class="fila-contador">
+              <app-error-campo [control]="f.descripcion" />
+              <span class="ayuda">{{ f.descripcion.value.length }}/200</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="acciones-formulario">
+          <button class="btn btn-primario" type="submit" [disabled]="guardando()">
+            {{ guardando() ? 'Guardando...' : 'Guardar cambios' }}
+          </button>
+          <button class="btn btn-secundario" type="button" (click)="cancelar()" [disabled]="guardando()">
+            Cancelar
+          </button>
+        </div>
+      </form>
+    } @else {
+      <div class="card perfil">
+        @if (u.imagenPerfil) {
+          <img [src]="u.imagenPerfil | urlImagen" alt="Foto de perfil" class="avatar" />
+        } @else {
+          <div class="avatar avatar-inicial">{{ u | iniciales }}</div>
+        }
+
+        <h3>{{ u.nombre }} {{ u.apellido }}</h3>
+        <p class="usuario">&#64;{{ u.nombreUsuario }}</p>
+
+        @if (u.perfil === 'administrador') {
+          <span class="insignia">Administrador</span>
+        }
+
+        @if (u.descripcion) {
+          <p>{{ u.descripcion }}</p>
+        }
+
+        <ul class="datos">
+          <li><strong>Correo:</strong> {{ u.correo }}</li>
+          <li><strong>Nacimiento:</strong> {{ u.fechaNacimiento | date: 'dd/MM/yyyy' : 'UTC' }}</li>
+          <li><strong>Perfil:</strong> {{ u.perfil }}</li>
+        </ul>
+
+        <div class="acciones-formulario">
+          <button type="button" class="btn btn-secundario" (click)="editar()">Editar perfil</button>
+        </div>
+      </div>
+    }
 
     <h3 class="seccion-titulo">Mis últimas publicaciones</h3>
 

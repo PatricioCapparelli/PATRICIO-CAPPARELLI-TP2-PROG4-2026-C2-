@@ -61,6 +61,10 @@ export class AuthService {
     this.router.navigate(['/login']);
   }
 
+  actualizarUsuario(usuario: Usuario) {
+  this.guardarUsuario(usuario);
+}
+
   private guardarSesion(r: RespuestaAuth) {
     this.guardarUsuario(r.usuario);
     this.verificada.set(true);

@@ -1156,3 +1156,15 @@ a:hover {
 .resaltado {
   background: rgba(190, 140, 107, 0.2);
 }
+
+/* ---------- Mi perfil: edición ---------- */
+.acciones-formulario {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-top: 1.5rem;
+}
+
+.perfil .acciones-formulario {
+  justify-content: center;
+}
