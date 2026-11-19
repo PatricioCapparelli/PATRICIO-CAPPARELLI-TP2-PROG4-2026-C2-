@@ -1,6 +1,7 @@
 import { Component, inject } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
+import { TemaService } from '../../../core/services/tema.service';
 import { SoloAdmin } from '../../directives/solo-admin.directive';
 
 @Component({
@@ -10,4 +11,5 @@ import { SoloAdmin } from '../../directives/solo-admin.directive';
 })
 export class Navbar {
   readonly auth = inject(AuthService);
+  readonly tema = inject(TemaService);
 }

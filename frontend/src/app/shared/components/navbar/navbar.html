@@ -3,13 +3,18 @@
   <div class="menu">
     @if (auth.logueado()) {
       <a routerLink="/publicaciones" routerLinkActive="active">Publicaciones</a>
-      <a routerLink="/mi-perfil" routerLinkActive="active">Mi perfil</a>
       <a *appSoloAdmin routerLink="/dashboard/usuarios" routerLinkActive="active">Usuarios</a>
       <a *appSoloAdmin routerLink="/dashboard/estadisticas" routerLinkActive="active">Estadísticas</a>
-      <button type="button" class="btn btn-salir" (click)="auth.logout()">Salir</button>
+      <img routerLink="/mi-perfil" routerLinkActive="active" [src]="auth.usuario()?.imagenPerfil" [alt]="auth.usuario()?.nombre" class="avatar-mini" />
     } @else {
       <a routerLink="/login" routerLinkActive="active">Ingresar</a>
       <a routerLink="/registro" routerLinkActive="active">Registrarse</a>
+    }
+    <button type="button" class="btn btn-tema" (click)="tema.alternar()">
+      {{ tema.tema() === 'oscuro' ? 'Modo claro' : 'Modo oscuro' }}
+    </button>
+    @if (auth.logueado()) {
+      <button type="button" class="btn btn-salir" (click)="auth.logout()">Salir</button>
     }
   </div>
 </nav>

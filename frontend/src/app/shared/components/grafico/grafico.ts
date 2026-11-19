@@ -22,6 +22,7 @@ import {
   Tooltip,
 } from 'chart.js';
 import type { ChartConfiguration } from 'chart.js';
+import { TemaService } from '../../../core/services/tema.service';
 
 Chart.register(
   BarController,
@@ -39,6 +40,8 @@ Chart.register(
 
 export type TipoGrafico = 'bar' | 'line' | 'pie';
 
+// Envoltorio de Chart.js. Los colores y las fuentes se leen de las variables CSS (styles.scss),
+// y el gráfico se vuelve a dibujar cuando cambia el tema claro/oscuro.
 @Component({
   selector: 'app-grafico',
   templateUrl: './grafico.html',
@@ -50,11 +53,13 @@ export class Grafico {
   serie = input('Cantidad');
   descripcion = input('Gráfico');
 
+  private tema = inject(TemaService);
   private lienzo = viewChild<ElementRef<HTMLCanvasElement>>('lienzo');
   private grafico?: Chart;
 
   constructor() {
     afterRenderEffect(() => {
+      this.tema.tema(); // dependencia: si cambia el tema, se redibuja con los colores nuevos
       const canvas = this.lienzo()?.nativeElement;
       if (!canvas) return;
       this.dibujar(canvas, this.tipo(), this.etiquetas(), this.valores(), this.serie());
@@ -71,19 +76,11 @@ export class Grafico {
   ) {
     const css = getComputedStyle(document.documentElement);
     const color = (variable: string) => css.getPropertyValue(variable).trim();
-    const paleta = [
-      '--marron-oscuro',
-      '--terracota',
-      '--oliva',
-      '--taupe',
-      '--gris-verde',
-      '--marron',
-      '--arena',
-      '--ladrillo',
-    ].map(color);
+    const paleta = [1, 2, 3, 4, 5, 6, 7, 8].map((n) => color(`--grafico-${n}`));
 
     Chart.defaults.font.family = color('--fuente-texto');
-    Chart.defaults.color = color('--marron-oscuro');
+    Chart.defaults.color = color('--texto');
+    Chart.defaults.borderColor = color('--linea');
 
     this.grafico?.destroy();
 
@@ -96,16 +93,12 @@ export class Grafico {
           {
             label: serie,
             data: valores,
-            backgroundColor: esTorta
-              ? etiquetas.map((_, i) => paleta[i % paleta.length])
-              : tipo === 'line'
-                ? color('--terracota')
-                : color('--marron'),
-            borderColor: esTorta ? color('--papel') : color('--marron-oscuro'),
+            backgroundColor: esTorta ? etiquetas.map((_, i) => paleta[i % paleta.length]) : paleta[0],
+            borderColor: esTorta ? color('--superficie') : tipo === 'line' ? paleta[0] : color('--grafico-borde'),
             borderWidth: esTorta ? 3 : tipo === 'line' ? 3 : 2,
             tension: 0.25,
             pointRadius: 4,
-            pointBackgroundColor: color('--terracota'),
+            pointBackgroundColor: paleta[1],
             fill: false,
           },
         ],
