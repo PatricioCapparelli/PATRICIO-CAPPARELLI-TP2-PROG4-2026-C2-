@@ -8,7 +8,7 @@
         alt="Foto de perfil de {{ p.autor.nombreUsuario }}"
       />
     } @else {
-      <div class="avatar-mini avatar-inicial">{{ p.autor.nombre[0] }}{{ p.autor.apellido[0] }}</div>
+      <div class="avatar-mini avatar-inicial">{{ p.autor | iniciales }}</div>
     }
 
     <div class="publicacion-autor">
@@ -30,7 +30,7 @@
       <a [routerLink]="['/publicaciones', p._id]">{{ p.titulo }}</a>
     </h3>
   }
-  <p class="publicacion-texto">{{ p.descripcion }}</p>
+  <p class="publicacion-texto">{{ grande() ? p.descripcion : (p.descripcion | acortar: 260) }}</p>
 
   @if (p.imagen) {
     <img class="publicacion-imagen" [src]="p.imagen | urlImagen" alt="Imagen de la publicación" />

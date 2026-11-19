@@ -8,6 +8,8 @@ export interface Usuario {
   descripcion?: string;
   imagenPerfil?: string;
   perfil: 'usuario' | 'administrador';
+  activo?: boolean; 
+  createdAt?: string;
 }
 
 export interface RespuestaAuth {

@@ -1,4 +1,4 @@
-import {ConflictException,Injectable,UnauthorizedException,} from '@nestjs/common';
+import { ConflictException, ForbiddenException, Injectable, UnauthorizedException, } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import * as bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
@@ -50,6 +50,12 @@ export class AuthService {
       throw new UnauthorizedException('El usuario o la contraseña son incorrectos.');
     }
 
+    if (usuario.activo === false) {
+      throw new ForbiddenException(
+        'Tu cuenta está deshabilitada y no tenés autorización para ingresar. Contactá a un administrador.',
+      );
+    }
+
     return {
       access_token: this.generarToken(usuario),
       usuario: this.sinPassword(usuario),
@@ -77,11 +83,11 @@ export class AuthService {
   }
 
   private firmar(payload: { user: string; id: string; perfil: string }) {
-  return jwt.sign(payload, this.config.getOrThrow<string>('JWT_SECRET'), {
-    issuer: 'MI SERVER',
-    expiresIn: '15m',
-  });
-}
+    return jwt.sign(payload, this.config.getOrThrow<string>('JWT_SECRET'), {
+      issuer: 'MI SERVER',
+      expiresIn: '15m',
+    });
+  }
 
   private sinPassword(usuario: UsuarioDocument) {
     const { password: _password, ...resto } = usuario.toObject();

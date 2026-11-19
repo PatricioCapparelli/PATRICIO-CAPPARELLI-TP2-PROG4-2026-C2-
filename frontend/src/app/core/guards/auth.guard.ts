@@ -23,3 +23,10 @@ export const publicoGuard: CanActivateFn = (_route, state) => {
   }
   return auth.logueado() ? router.createUrlTree(['/publicaciones']) : true;
 };
+
+// Dashboard: solo administradores (se usa después de authGuard)
+export const adminGuard: CanActivateFn = () => {
+  const auth = inject(AuthService);
+  const router = inject(Router);
+  return auth.usuario()?.perfil === 'administrador' ? true : router.createUrlTree(['/publicaciones']);
+};

@@ -4,7 +4,7 @@
       @if (u.imagenPerfil) {
         <img [src]="u.imagenPerfil | urlImagen" alt="Foto de perfil" class="avatar" />
       } @else {
-        <div class="avatar avatar-inicial">{{ u.nombre[0] }}{{ u.apellido[0] }}</div>
+        <div class="avatar avatar-inicial">{{ u | iniciales }}</div>
       }
 
       <h3>{{ u.nombre }} {{ u.apellido }}</h3>

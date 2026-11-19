@@ -1,0 +1,38 @@
+<section class="card ancha panel-grafico">
+  <h3>{{ titulo() }}</h3>
+  @if (descripcion()) {
+    <p class="subtitulo">{{ descripcion() }}</p>
+  }
+
+  <form class="lapso" [formGroup]="form" (ngSubmit)="actualizar()" novalidate>
+    <div class="campo">
+      <label [attr.for]="'desde-' + uid">Desde</label>
+      <input [id]="'desde-' + uid" type="date" formControlName="desde" [max]="hoy" />
+    </div>
+    <div class="campo">
+      <label [attr.for]="'hasta-' + uid">Hasta</label>
+      <input [id]="'hasta-' + uid" type="date" formControlName="hasta" [max]="hoy" />
+    </div>
+    <button class="btn btn-primario btn-chico" type="submit" [disabled]="cargando()">Aplicar</button>
+
+    <div class="atajos">
+      <button type="button" class="btn-chip" (click)="atajo(7)">7 días</button>
+      <button type="button" class="btn-chip" (click)="atajo(30)">30 días</button>
+      <button type="button" class="btn-chip" (click)="atajo(90)">90 días</button>
+    </div>
+  </form>
+
+  @if (cargando()) {
+    <p class="ayuda">Cargando gráfico...</p>
+  } @else if (!hayDatos()) {
+    <p class="vacio ayuda">No hay datos en el lapso elegido.</p>
+  } @else {
+    <app-grafico
+      [tipo]="tipo()"
+      [etiquetas]="etiquetas()"
+      [valores]="valores()"
+      [serie]="serie()"
+      [descripcion]="titulo()"
+    />
+  }
+</section>

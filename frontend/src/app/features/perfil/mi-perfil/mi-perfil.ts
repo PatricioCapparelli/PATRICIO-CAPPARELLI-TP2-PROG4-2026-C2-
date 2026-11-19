@@ -5,11 +5,12 @@ import { ComentariosService } from '../../../core/services/comentarios.service';
 import { PublicacionesService } from '../../../core/services/publicaciones.service';
 import { PublicacionItem } from '../../../shared/components/publicacion-item/publicacion-item';
 import { Publicacion } from '../../../shared/models/publicacion';
+import { InicialesPipe } from '../../../shared/pipes/iniciales.pipe';
 import { UrlImagenPipe } from '../../../shared/pipes/url-imagen.pipe';
 
 @Component({
   selector: 'app-mi-perfil',
-  imports: [DatePipe, PublicacionItem, UrlImagenPipe],
+  imports: [DatePipe, PublicacionItem, UrlImagenPipe, InicialesPipe],
   templateUrl: './mi-perfil.html',
 })
 export class MiPerfil implements OnInit {
@@ -25,14 +26,12 @@ export class MiPerfil implements OnInit {
     const id = this.auth.usuario()?._id;
     if (!id) return;
 
-    // últimas 3 publicaciones del usuario
     this.publicacionesService
       .listar({ orden: 'fecha', offset: 0, limit: 3, usuario: id })
       .subscribe({
         next: (r) => {
           this.publicaciones.set(r.items);
           this.cargando.set(false);
-          // y los comentarios de cada una
           r.items.forEach((p) =>
             this.comentariosService.listar(p._id, 0, 5).subscribe({
               next: (c) =>

@@ -1,0 +1,180 @@
+<div class="contenedor contenedor-ancho">
+  <h2>Usuarios</h2>
+
+  @if (cargando()) {
+    <p class="ayuda">Cargando usuarios...</p>
+  } @else {
+    <section class="tabla-scroll" aria-label="Listado de usuarios">
+      <table class="tabla">
+        <thead>
+          <tr>
+            <th>Usuario</th>
+            <th>Correo</th>
+            <th>Perfil</th>
+            <th>Estado</th>
+            <th>Alta</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (u of usuarios(); track u._id) {
+            <tr appResaltar>
+              <td>
+                <div class="usuario-celda">
+                  @if (u.imagenPerfil) {
+                    <img
+                      class="avatar-mini"
+                      [src]="u.imagenPerfil | urlImagen"
+                      alt="Foto de perfil de {{ u.nombreUsuario }}"
+                    />
+                  } @else {
+                    <div class="avatar-mini avatar-inicial">{{ u | iniciales }}</div>
+                  }
+                  <div class="publicacion-autor">
+                    <strong>{{ u.nombre }} {{ u.apellido }}</strong>
+                    <span class="ayuda">&#64;{{ u.nombreUsuario }}</span>
+                  </div>
+                </div>
+              </td>
+              <td>{{ u.correo }}</td>
+              <td>
+                @if (u.perfil === 'administrador') {
+                  <span class="etiqueta etiqueta-admin">Administrador</span>
+                } @else {
+                  Usuario
+                }
+              </td>
+              <td>
+                @if (esActivo(u)) {
+                  <span class="etiqueta etiqueta-activo">Activo</span>
+                } @else {
+                  <span class="etiqueta etiqueta-deshabilitado">Deshabilitado</span>
+                }
+              </td>
+              <td>{{ u.createdAt | tiempoRelativo }}</td>
+              <td>
+                @if (esYo(u)) {
+                  <span class="ayuda">Tu cuenta</span>
+                } @else if (esActivo(u)) {
+                  <button
+                    type="button"
+                    class="btn btn-peligro btn-chico"
+                    [appConfirmar]="'¿Querés deshabilitar a ' + u.nombreUsuario + '? No va a poder ingresar a la aplicación.'"
+                    titulo="Deshabilitar usuario"
+                    textoConfirmar="Deshabilitar"
+                    (confirmado)="deshabilitar(u)"
+                  >
+                    Deshabilitar
+                  </button>
+                } @else {
+                  <button
+                    type="button"
+                    class="btn btn-secundario btn-chico"
+                    [appConfirmar]="'¿Querés volver a habilitar a ' + u.nombreUsuario + '?'"
+                    titulo="Habilitar usuario"
+                    textoConfirmar="Habilitar"
+                    (confirmado)="habilitar(u)"
+                  >
+                    Habilitar
+                  </button>
+                }
+              </td>
+            </tr>
+          } @empty {
+            <tr>
+              <td colspan="6" class="vacio">No hay usuarios.</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </section>
+  }
+
+  <form class="card ancha formulario-usuario" [formGroup]="form" (ngSubmit)="crear()" novalidate>
+    <h3>Nuevo usuario</h3>
+    <p class="subtitulo">Crea un usuario y defini su perfil o rol.</p>
+
+    <div class="form-grid">
+      <div class="campo">
+        <label for="nu-nombre">Nombre</label>
+        <input id="nu-nombre" formControlName="nombre" [class.con-error]="invalido(f.nombre)" />
+        <app-error-campo [control]="f.nombre" />
+      </div>
+
+      <div class="campo">
+        <label for="nu-apellido">Apellido</label>
+        <input id="nu-apellido" formControlName="apellido" [class.con-error]="invalido(f.apellido)" />
+        <app-error-campo [control]="f.apellido" />
+      </div>
+
+      <div class="campo">
+        <label for="nu-correo">Correo</label>
+        <input id="nu-correo" type="email" formControlName="correo" [class.con-error]="invalido(f.correo)" />
+        <app-error-campo [control]="f.correo" />
+      </div>
+
+      <div class="campo">
+        <label for="nu-usuario">Nombre de usuario</label>
+        <input id="nu-usuario" formControlName="nombreUsuario" [class.con-error]="invalido(f.nombreUsuario)" />
+        <app-error-campo [control]="f.nombreUsuario" />
+      </div>
+
+      <div class="campo">
+        <label for="nu-password">Contraseña</label>
+        <input id="nu-password" type="password" formControlName="password" [class.con-error]="invalido(f.password)" />
+        <app-error-campo [control]="f.password" />
+        <span class="ayuda">Mínimo 8 caracteres, una mayúscula y un número.</span>
+      </div>
+
+      <div class="campo">
+        <label for="nu-repetir">Repetir contraseña</label>
+        <input id="nu-repetir" type="password" formControlName="repetirPassword" [class.con-error]="repetirInvalido()" />
+        <app-error-campo [control]="f.repetirPassword" />
+        @if (form.errors?.['passwordsDistintas'] && f.repetirPassword.touched) {
+          <span class="error-texto">Las contraseñas no coinciden.</span>
+        }
+      </div>
+
+      <div class="campo">
+        <label for="nu-nacimiento">Fecha de nacimiento</label>
+        <input id="nu-nacimiento" type="date" formControlName="fechaNacimiento" [class.con-error]="invalido(f.fechaNacimiento)" />
+        <app-error-campo [control]="f.fechaNacimiento" />
+      </div>
+
+      <div class="campo">
+        <label for="nu-imagen">Imagen de perfil (opcional)</label>
+        <input #archivoInput id="nu-imagen" type="file" accept="image/*" (change)="onArchivo($event)" [class.con-error]="errorArchivo()" />
+        @if (errorArchivo()) {
+          <span class="error-texto">{{ errorArchivo() }}</span>
+        }
+      </div>
+
+      <div class="campo completo">
+        <span class="etiqueta-campo" id="nu-perfil">Perfil</span>
+        <div class="radios" role="radiogroup" aria-labelledby="nu-perfil">
+          <label class="radio">
+            <input type="radio" formControlName="perfil" value="usuario" />
+            Usuario
+          </label>
+          <label class="radio">
+            <input type="radio" formControlName="perfil" value="administrador" />
+            Administrador
+          </label>
+        </div>
+      </div>
+
+      <div class="campo completo">
+        <label for="nu-descripcion">Descripción breve</label>
+        <textarea id="nu-descripcion" rows="3" formControlName="descripcion" [class.con-error]="invalido(f.descripcion)"></textarea>
+        <div class="fila-contador">
+          <app-error-campo [control]="f.descripcion" />
+          <span class="ayuda">{{ f.descripcion.value.length }}/200</span>
+        </div>
+      </div>
+    </div>
+
+    <button class="btn btn-primario btn-block" type="submit" [disabled]="creando()">
+      {{ creando() ? 'Creando usuario...' : 'Crear usuario' }}
+    </button>
+  </form>
+</div>

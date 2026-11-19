@@ -22,12 +22,12 @@
             alt="Foto de perfil de {{ c.autor.nombreUsuario }}"
           />
         } @else {
-          <div class="avatar-mini avatar-inicial">{{ c.autor.nombre[0] }}{{ c.autor.apellido[0] }}</div>
+          <div class="avatar-mini avatar-inicial">{{ c.autor | iniciales }}</div>
         }
         <div class="publicacion-autor">
           <strong>{{ c.autor.nombre }} {{ c.autor.apellido }}</strong>
-          <span class="ayuda">
-            {{ c.createdAt | date: 'dd/MM/yyyy HH:mm' }}
+          <span class="ayuda" [attr.title]="c.createdAt | date: 'dd/MM/yyyy HH:mm'">
+            {{ c.createdAt | tiempoRelativo }}
             @if (c.modificado) {
               <span class="editado">(editado)</span>
             }

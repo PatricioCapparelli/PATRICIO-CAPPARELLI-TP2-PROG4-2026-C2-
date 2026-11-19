@@ -1,11 +1,19 @@
 import { DatePipe } from '@angular/common';
 import { Component, OnInit, computed, inject, input, signal } from '@angular/core';
-import { AbstractControl, FormBuilder, FormControl, ReactiveFormsModule, Validators, } from '@angular/forms';
+import {
+  AbstractControl,
+  FormBuilder,
+  FormControl,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
 import { AuthService } from '../../../core/services/auth.service';
 import { ComentariosService } from '../../../core/services/comentarios.service';
 import { ModalService } from '../../../core/services/modal.service';
 import { ErrorCampo } from '../../../shared/components/error-campo/error-campo';
 import { Comentario } from '../../../shared/models/publicacion';
+import { InicialesPipe } from '../../../shared/pipes/iniciales.pipe';
+import { TiempoRelativoPipe } from '../../../shared/pipes/tiempo-relativo.pipe';
 import { UrlImagenPipe } from '../../../shared/pipes/url-imagen.pipe';
 import { mensajesDeError } from '../../../shared/utils/errores';
 
@@ -13,7 +21,14 @@ const VALIDADORES = [Validators.required, Validators.maxLength(500), Validators.
 
 @Component({
   selector: 'app-comentarios',
-  imports: [ReactiveFormsModule, DatePipe, ErrorCampo, UrlImagenPipe],
+  imports: [
+    ReactiveFormsModule,
+    DatePipe,
+    ErrorCampo,
+    UrlImagenPipe,
+    InicialesPipe,
+    TiempoRelativoPipe,
+  ],
   templateUrl: './comentarios.html',
 })
 export class Comentarios implements OnInit {
@@ -51,6 +66,7 @@ export class Comentarios implements OnInit {
     return c.autor._id === this.auth.usuario()?._id;
   }
 
+  // Primera carga y botón "Cargar más": trae la siguiente tanda sin borrar las anteriores
   cargar() {
     this.cargando.set(true);
     this.comentariosService

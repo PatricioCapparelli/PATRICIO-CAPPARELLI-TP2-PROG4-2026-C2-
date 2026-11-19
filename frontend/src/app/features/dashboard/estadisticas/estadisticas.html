@@ -1,0 +1,27 @@
+<div class="contenedor contenedor-ancho">
+  <h2>Estadísticas</h2>
+
+  <app-panel-grafico
+    titulo="Publicaciones por usuario"
+    descripcion="Cantidad de publicaciones realizadas por cada usuario."
+    tipo="bar"
+    serie="Publicaciones"
+    [cargar]="publicacionesPorUsuario"
+  />
+
+  <app-panel-grafico
+    titulo="Comentarios por día"
+    descripcion="Cantidad de comentarios realizados cada día."
+    tipo="line"
+    serie="Comentarios"
+    [cargar]="comentariosPorDia"
+  />
+
+  <app-panel-grafico
+    titulo="Comentarios por publicación"
+    descripcion="Las publicaciones con más comentarios."
+    tipo="pie"
+    serie="Comentarios"
+    [cargar]="comentariosPorPublicacion"
+  />
+</div>
